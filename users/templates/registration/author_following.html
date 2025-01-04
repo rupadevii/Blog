@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Users Followed by {{ author.username }}</h2>
+    <hr>
+    <div class="row">
+        {% for followee in following %}
+            <div class="col-md-3 text-center mb-3">
+                {% if followee.profile.picture %}
+                    <img src="{{ followee.profile.picture.url }}" alt="{{ followee.username }}" 
+                         class="rounded-circle" style="width: 60px; height: 60px;">
+                {% else %}
+                    <div class="rounded-circle bg-secondary text-white d-inline-block" 
+                         style="width: 60px; height: 60px; line-height: 60px;">
+                        {{ followee.username|slice:":1"|upper }}
+                    </div>
+                {% endif %}
+                <p class="mt-2">{{ followee.username }}</p>
+            </div>
+        {% empty %}
+            <p class="text-center">This author is not following anyone.</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

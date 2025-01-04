@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+{% comment %} {% extends "base.html" %}
+
+{% block title %}Edit Post{% endblock %}
+
+{% block content %}
+<div class="wrapper p-5">
+    <div class="container mt-5 d-flex justify-content-center align-items-center content">
+        <div class="m-3 w-75 border border-dark rounded p-3">
+            <h2 class="text-center">Edit Post</h2>
+            <form method="post" action="" enctype="multipart/form-data" class="m-4">
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="title" class="m-2">Title</label>
+                    <input 
+                        type="text" 
+                        id="title" 
+                        name="title" 
+                        class="form-control {% if errors.title %}is-invalid{% endif %}" 
+                        value="{{ post.title }}">
+                    {% if errors.title %}
+                    <div class="invalid-feedback">{{ errors.title }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="content" class="m-2">Content</label>
+                    <textarea 
+                        id="content" 
+                        name="content" 
+                        class="form-control {% if errors.content %}is-invalid{% endif %}" 
+                        rows="5">{{ post.content }}</textarea> 
+                    {% if errors.content %}
+                    <div class="invalid-feedback">{{ errors.content }}</div>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="image" class="m-2">Image</label>
+                    <input type="file" id="image" name="image" class="form-control mb-3">
+                    {% if post.image %}
+                    <small class="form-text text-muted mt-3">Current image: <a href="{{ post.image.url }}" target="_blank">View</a></small>
+                    {% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="category" class="m-2">Category</label>
+                    <select id="category" name="category" class="form-control">
+                        <option value="">--Select a Category--</option>
+                        {% for cat in categories %}
+                        <option value="{{ cat.id }}">{{ cat.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="tags" class="m-2">Tags</label>
+                    <input type="text" id="tags" name="tags" class="form-control" placeholder="Enter tags separated by commas">
+                </div>
+
+                <button type="submit" class="btn btn-primary mt-3">Update Post</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+ {% endcomment %}
+
+{% block content %}
+<div class="wrapper p-5">
+    <div class="container mt-5 d-flex justify-content-center align-items-center content">
+        <div class="container mt-3">
+            <h2 class="mb-3 display-6">Edit Post</h2>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                {{form.media}}
+                <div class="form-group m-3">
+                    <label for="title" class="mb-2">Title</label>
+                    {{ form.title }}
+                </div>
+                <div class="form-group m-3">
+                    <label for="content" class="mb-2">Content</label>
+                    {{ form.content }}
+                </div>
+                <div class="form-group m-3">
+                    <label for="image" class="mb-2">Image</label>
+                    {{ form.image }}
+                </div>
+                <div class="form-group m-3">
+                    <label for="category" class="mb-2">Category</label>
+                    {{ form.category }}
+                </div>
+                <div class="form-group m-3">
+                    <label for="tags" class="mb-2">Tags</label>
+                    {{ form.tags }}
+                </div>
+                <div class="m-3">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <a href="{% url 'post_detail' post.id %}" class="btn btn-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+ {% endblock %}
+ 

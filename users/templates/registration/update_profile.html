@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="wrapper p-5">
+    <div class="container mt-5 content border border-dark rounded w-75 p-4">
+        <h2 class="display-6 mb-2">Update Your Profile</h2>
+        <div class="p-2 m-4">
+            <form method="post" enctype="multipart/form-data">
+                {{form.media}}
+                {% csrf_token %}
+                <div class="form-group mb-3">
+                    <label for="bio" class="mb-2">Bio:</label>
+                    <textarea id="bio" name="bio" class="form-control">{{ profile.bio }}</textarea>
+                </div>
+                <div class="form-group mb-3">
+                    <label for="instagram" class="mb-2">Instagram (optional):</label>
+                    <input type="text" class="form-control" id="instagram" name="instagram" value="{{ profile.instagram }}" placeholder="https://instagram.com/your_profile">
+                </div>
+                <div class="form-group mb-3">
+                    <label for="youtube" class="mb-2">YouTube (optional):</label>
+                    <input type="text" class="form-control" id="youtube" name="youtube" value="{{ profile.youtube }}" placeholder="https://youtube.com/your_channel">
+                </div>
+                <div class="form-group mb-3">
+                    <label for="facebook" class="mb-2">Facebook (optional):</label>
+                    <input type="text" class="form-control" id="facebook" name="facebook" value="{{ profile.facebook }}" placeholder="https://facebook.com/your_profile">
+                </div>
+                <div class="form-group mb-3">
+                    <label for="x" class="mb-2">X (formerly Twitter, optional):</label>
+                    <input type="text" class="form-control" id="x" name="x" value="{{ profile.x }}" placeholder="https://x.com/your_profile">
+                </div>
+                <div class="form-group mb-3">
+                    <label for="profile_picture" class="mb-2">Profile Picture:</label>
+                    <input type="file" class="form-control" id="profile_picture" name="profile_picture">
+                </div>
+                <div class="row">
+                    <div class="col-9">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                    <div class="col ms-5">
+                        <a href="{% url 'change_password' %}" class="btn btn-primary" type="btn">Change Password</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+</div>
+{% endblock %}

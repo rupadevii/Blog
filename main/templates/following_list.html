@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block title %}Following{% endblock %}
+
+{% block content %}
+<div class="wrapper p-5">
+    <div class="container mt-5">
+        <h2>Users You Follow</h2>
+        <ul class="list-group">
+            {% for follow in following %}
+            <li class="list-group-item">
+                {% comment %} <a href="{% url 'author_profile' username=follow.following.username %}"> {% endcomment %}
+                    {{ follow.following.username }}
+                </a>
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+{% endblock %}

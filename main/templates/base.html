@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>{% block title %}Blogging Platform{% endblock %}</title>
+
+    {% block extra_head %}
+    <style>
+        html, body {
+            height: 100%;
+        }
+
+        body{
+            background-color: #ddcccc ;
+        }
+
+        .wrapper {
+            min-height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .content {
+            flex: 1;
+        }
+
+        .dark-mode {
+            background-color: #121212;
+            color: #ffffff;
+        }
+
+        .ck-editor__editable {
+            color: #000000 !important;
+            background-color: #ffffff !important; /* Ensure light background for readability */
+        }
+        
+    </style>
+    {% endblock %}
+
+</head>
+
+<body>
+    <div class="fixed-top">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container-fluid ms-5">
+                <a class="navbar-brand nav-link" href="#">Blog</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link active text-light" aria-current="page" href="{% url 'home' %}">Home</a>
+                        </li>
+                        {% if user.is_authenticated %}
+                            <li class="nav-item">
+                                <a class="nav-link active" href="{% url 'create_post' %}">Add Post</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                    <div class="mx-auto col-4">
+                        <form method="GET" action="{% url 'search_posts' %}" class="d-flex flex-row">
+                            <input type="text" name="q" placeholder="Search posts" class="form-control me-2" aria-label="Search">
+                            <button type="submit" class="btn btn-outline-primary">Search</button>
+                        </form>
+                    </div>
+                    
+                    {% if user.is_authenticated %}
+                    <ul class="navbar-nav me-3 mb-2 mb-lg-0 d-flex align-items-center justify-content-center">
+                        <form method="POST" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-tertiary text-light">Log out</button>
+                        </form>
+                        <li class="nav-item">
+                            {% if user.profile.profile_picture %}
+                            <a class="nav-link active" href="{% url 'user_profile' user_id=user.id %}"><img src="{{user.profile.profile_picture.url}}" height="35px" width="35px" class="rounded-circle object-fit-cover"></a>
+                            {% else %}
+                            {% load static %}
+                            <a class="nav-link active" href="{% url 'user_profile' user_id=user.id %}"><img src="{% static 'main/images/profile-pic.png'%}" height="30px"></a>
+                            {% endif %}
+                        </li> 
+                        <li class="nav-item">
+                            {% load static %}
+                            <a class="nav-link active" href="{% url 'private_messages' %}"><img src="{% static 'main/images/message.png'%}" height="30px"></a>
+                        </li>
+                        <li class="nav-item">
+                            {% load static %}
+                            <a class="nav-link active" href="{% url 'post_analytics' %}"><img src="{% static 'main/images/analytics.png'%}" height="28px" ></a>
+                        </li> 
+                    </ul>  
+                    {% else %} 
+                        <ul class="navbar-nav me-3 mb-2 mb-lg-0">
+                            <li class="nav-item mr-3">
+                                <a class="nav-link text-light" href="{% url 'login' %}">Login</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-light" href="{% url 'signup' %}">Register</a>
+                            </li>
+                        </ul>
+                    {% endif %}
+                    {% load static %}
+                    <button id="themeToggle" class="btn btn-secondary btn-sm mx-1 p-0 bg-light"><img src="{% static 'main/images/dark.png' %}" height="20px"></button>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </div>
+    
+    {% block content %}
+    {% endblock %}
+   
+    {% block footer %}
+        <footer class="bg-dark text-white text-center py-3">
+            <div class="container">
+                <p>&copy; 2024 My Website. All Rights Reserved.</p>
+                <p>
+                    <a href="#" class="text-white me-2">Privacy Policy</a>
+                    <a href="#" class="text-white">Terms of Service</a>
+                </p>
+            </div>
+        </footer>
+    {% endblock %}
+    
+    {% block extra_footer%}
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const themeToggle = document.getElementById('themeToggle');
+            const savedTheme = localStorage.getItem('theme');
+            const nonNavLinks = document.querySelectorAll('body a:not(.navbar .nav-link):not(table a)');
+            const editorContainer = document.querySelector('.ck-editor__editable');
+    
+            if (savedTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                updateLinkColors('dark');
+            } else {
+                updateLinkColors('light');
+            }
+    
+            themeToggle.addEventListener('click', () => {
+                const isDarkMode = document.body.classList.toggle('dark-mode');
+                localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+                updateLinkColors(isDarkMode ? 'dark' : 'light');
+            });
+    
+            function updateLinkColors(theme) {
+                nonNavLinks.forEach(link => {
+                    if (theme === 'dark') {
+                        link.classList.remove('text-dark');
+                        link.classList.add('text-light');
+                    } else {
+                        link.classList.remove('text-light');
+                        link.classList.add('text-dark');
+                    }
+                });
+
+                if (editorContainer) {
+                    editorContainer.style.color = '#000000'; // Always dark text
+                }
+            }
+        });
+    </script>
+    {% endblock %}
+    
+</body>
+</html>

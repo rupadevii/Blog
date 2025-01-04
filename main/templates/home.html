@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+
+{% block content%}
+
+<div class="wrapper p-5">
+    <div class="container mt-5 content">
+        <div class="row">
+            <div class="col-lg-8 mb-4">
+                {% for post in posts_with_images %}
+                <div class="border rounded border-dark shadow mb-4">
+                    <a href="{% url 'post_detail' post.id %}" class="link-underline link-offset-1 link-underline-opacity-0 text-dark">
+                    <img src="{{ post.image.url }}" class="mb-3" alt="Post Image" height="500px" width="853px">
+                    <div class="container ms-2">
+                        <h5 class="mb-2">{{ post.title }}</h5>
+                        <p class="m-0">{{ post.content|truncatewords:30 |safe}}</p>
+                        <div class="d-flex flex-row ">
+                            <div class="me-2 mb-2">
+                                {% if post.author.profile.profile_picture %}
+                                <img src="{{post.author.profile.profile_picture.url}}" height="40px" width="40px" class="rounded-circle object-fit-cover border border-dark mb-2">
+                                {% else %}
+                                {% load static%}
+                                <img src="{% static 'main/images/profile-user.png'%}" height="40px" width="40px">
+                                {% endif %}
+                            </div>
+                            <div class="mt-2">
+                                <span>{{post.author}}</span> <span class="fw-light fs-6">&#x2022  {{post.created_at | date:"M d, Y"}}</span>
+                            </div>
+                        </div>
+                    </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div class="col-lg-4">
+                {% for post in posts_without_images %}
+                <div class="border rounded border-dark shadow p-3 mb-4">
+                    <a href="{% url 'post_detail' post.id %}" class="link-underline link-offset-1 link-underline-opacity-0 text-dark">
+                    <h5>{{ post.title }}</h5>
+                    <p>{{ post.content|truncatewords:20|safe}}</p>
+                    <div class="d-flex flex-row align-items-center">
+                        <div class="me-2">
+                            {% if post.author.profile.profile_picture %}
+                            <img src="{{post.author.profile.profile_picture.url}}" height="40px" width="40px" class="rounded-circle object-fit-cover border border-dark">
+                            {% else %}
+                            {% load static%}
+                            <img src="{% static 'main/images/profile-user.png'%}" height="40px" width="40px" class="mb-0">
+                            {% endif %}
+                        </div>
+                        <div class="mt-2">
+                            <span>{{post.author}}</span> <span class="fw-light fs-6">&#x2022  {{post.created_at|date:"M d, Y"}}</span>
+                        </div>
+                    </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+

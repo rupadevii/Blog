@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}{{ post.title }}{% endblock %}
+
+{% block content %}
+<div class="p-5 wrapper">
+    <div class="container mt-5 content">
+        <h1 class="display-4">{{ post.title }}</h1>
+        <p class="post-meta fw-light ms-2">  {{ post.created_at}}</p>
+        {% if category %}
+        <p>Category: {{ post.category.name }}</p>
+        {% endif %}
+        {% if Tags %}
+        <p>Tags: 
+            {% for tag in post.tags.all %}
+                <span class="badge badge-info">{{ tag.name }}</span>
+            {% endfor %}
+        </p>
+        {% endif %}
+
+        <div class="post-content m-2 ">
+            {% if post.image %}
+            <img src="{{ post.image.url }}" class="img-fluid" alt="{{ post.title }}">
+            {% endif %}
+            <p class="mt-3 lh-lg">{{ post.content|safe}}</p>
+        </div>
+        
+        <div class="d-flex align-items-center row">
+            <div class="col-10">
+                <div class="d-flex flex-column justify-content-center">
+                    <form method="post" action="{% url 'like_post' post.id %}" class="mr-2">
+                        {% csrf_token %}
+                        {% if user in post.likes.all %}
+                        {% load static %}
+                        <button type="submit" class="btn"><img src="{% static 'main/images/cyan-like.png'%}"  height="25px"></button>
+                        {% else %}
+                        {% load static %}
+                        <button type="submit" class="btn"><img src="{% static 'main/images/like.png'%}"></button>
+                        {% endif %}
+                    </form>
+                    <span class="fw-lighter ms-2">{{ post.total_likes }} likes</span>
+                </div>
+            </div>
+            <div class="col-2">
+                {% if user == post.author %}
+                <a href="{% url 'edit_post' post_id=post.id %}" class="btn btn-warning">Edit</a>
+                <a href="{% url 'delete_post' post_id=post.id %}" class="btn btn-danger">Delete</a>
+                {% endif %}
+            </div>
+        </div>
+
+        <hr>
+        <a href="{% url 'author_profile' post.author.id %}" class="link-underline link-offset-1 link-underline-opacity-0 text-dark link-underline-opacity-100-hover">
+        <div class="d-flex flex-row align-items-center ms-3"> 
+            <div class="me-3">
+                {% if post.author.profile.profile_picture %}
+                <img src="{{post.author.profile.profile_picture.url}}" height="50px" width="50px" class="rounded-circle object-fit-cover">
+                {% else %}
+                {% load static%}
+                <img src="{% static 'main/images/profile-user.png'%}" height="40px" width="40px">
+                {% endif %}
+            </div>
+            <div class="mt-3">
+                <p>{{post.author}}</p>
+            </div>
+        </div>
+        </a>
+        <hr>
+        <div class="m-3 p-2">
+            {% if user.is_authenticated %}
+                <form method="post" class="mt-3">
+                    {% csrf_token %}
+                    <textarea name="content" rows="3" class="form-control" placeholder="Add a comment..."></textarea>
+                    <button type="submit" class="btn btn-success mt-2">Post</button>
+                </form>
+            {% else %}
+                <p><a href="{% url 'login' %}">Login</a> to add a comment.</p>
+            {% endif %}
+        </div>
+        <hr>
+
+        <div class="m-3">
+            <h3 class="fw-semibold m-4">Comments</h3>
+            <ul>
+                {% for comment in post.comments.all %}
+                <li class="list-group-item">
+                    <strong>{{ comment.author.username }}</strong>  &#x2022 <span class="fw-light fs-6"> {{ comment.created_at|date:"M d, Y H:i" }}:</span>
+                    <p>{{ comment.content }}</p>
+                </li>
+                {% empty %}
+                <li class="list-group-item">No comments yet.</li>
+                {% endfor %}
+            </ul>
+        </div>
+        
+    </div>
+</div>
+{% endblock %}

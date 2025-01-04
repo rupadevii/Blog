@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}{{ user.username }}'s Profile{% endblock %}
+
+{% block content %}
+
+<div class="container wrapper p-5">
+    <div class="content mt-5">
+        <div class="row text-center">
+            <div class="col-3">
+                {% if user.profile.profile_picture%}
+                    <img src="{{user.profile.profile_picture.url}}" class="profile-picture mb-3 rounded-circle w-25 object-fit-cover" width="80px" height="80px">
+                {% else %}
+                {% load static%}
+                <img src="{% static 'main/images/profile-user.png'%}" height="75px" width="75px">
+                {% endif %}
+                <h4 class="mt-2">{{ user.username }}</h4>
+                {% if user.profile.bio %}
+                <p>{{ user.profile.bio }}</p>
+                {% endif %}
+                <p class="fw-light">Joined: {{ user.date_joined|date:"F j, Y" }}</p>
+            </div>
+            <div class="col-6">
+                <div class="stats d-flex justify-content-evenly align-items-center my-4 ">
+                    <div class="stat-item me-4">
+                        <a href="{% url 'followers_list' %}" class="link-underline link-offset-1 link-underline-opacity-0">
+                        <h6>Followers</h6>
+                        <p>{{ user.followers.count }}</p>
+                        </a>
+                    </div>
+                    <div class="stat-item me-4">
+                        <a href="{% url 'following_list' %}" class="link-underline link-offset-1 link-underline-opacity-0 text-dark">
+                        <h6>Following</h6>
+                        <p>{{ user.following.count }}</p></a>
+                    </div>
+                    <div class="stat-item me-4">
+                        <h6>Posts</h6>
+                        <p>{{ user.posts.count }}</p>
+                    </div>
+                </div> 
+            </div>
+            <div class="col-3">
+                <a href="{% url 'update_profile' %}" class="btn btn-primary" type="btn">Update</a>
+            </div>
+        </div>
+    
+        <hr>
+
+        <div class="social-links">
+            {% if user.profile.instagram %}
+                <a href="{{ user.profile.instagram }}" class="instagram" target="_blank">Instagram</a>
+            {% endif %}
+            {% if user.profile.youtube %}
+                <a href="{{ user.profile.youtube }}" class="youtube" target="_blank">YouTube</a>
+            {% endif %}
+            {% if user.profile.facebook %}
+                <a href="{{ user.profile.facebook }}" class="facebook" target="_blank">Facebook</a>
+            {% endif %}
+            {% if user.profile.x %}
+                <a href="{{ user.profile.x }}" class="x" target="_blank">X</a>
+            {% endif %}
+        </div>
+    
+        <div class="p-3 rounded shadow">
+            <h3 class="display-6 mb-4">Posts</h3>
+            {% if posts %}
+                <ul class="list-group">
+                    {% for post in posts %}
+                        <div class="mb-4 border border-dark shadow rounded p-3">
+                            <a href="{% url 'post_detail' post.id %}" class="link-underline link-offset-1 link-underline-opacity-0 text-dark">
+                        
+                                {% if post.image %}
+                                <img src="{{ post.image.url }}" class="mb-3 w-100" alt="{{ post.title }}">
+                                {% endif %}
+                                <div class="p-2 ">
+                                    <h5 style="display:inline-block" class="me-1">{{ post.title }}</h5><span class="fw-light">&#x2022  {{post.created_at}}</span>
+                                    <p class="mb-0">{{ post.content|truncatechars:250 | safe }}</p>
+                                </div>
+                                </a>
+                            
+                        </div>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p>No posts created yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
