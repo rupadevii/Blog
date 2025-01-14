@@ -10,7 +10,7 @@
                 {% for post in posts_with_images %}
                 <div class="border rounded border-dark shadow mb-4">
                     <a href="{% url 'post_detail' post.id %}" class="link-underline link-offset-1 link-underline-opacity-0 text-dark">
-                    <img src="{{ post.image.url }}" class="mb-3" alt="Post Image" height="500px" width="853px">
+                    <img src="{{ post.image.url }}" class="mb-3 object-fit-sm-contain w-100" alt="Post Image">
                     <div class="container ms-2">
                         <h5 class="mb-2">{{ post.title }}</h5>
                         <p class="m-0">{{ post.content|truncatewords:30 |safe}}</p>
@@ -34,8 +34,21 @@
             </div>
             
             <div class="col-lg-4">
+                <div class="rounded shadow p-5">
+                    <h2 class="display-6 mb-5 text-center">Top Categories</h2>
+                    <div class="row">
+                        <div class="col">
+                        {% for category in top_categories %}
+                            <div class="row mb-4 d-flex align-items-center">
+                                <a href="{% url 'filter_posts_by_category' category.id %}" class="btn border border-dark rounded">
+                                <h5 class="mt-2">{{ category.name }}</h5></a>
+                            </div>
+                        {% endfor %}
+                        </div>
+                    </div>
+                </div>
                 {% for post in posts_without_images %}
-                <div class="border rounded border-dark shadow p-3 mb-4">
+                <div class="border rounded border-dark shadow p-3 mb-4 mt-4">
                     <a href="{% url 'post_detail' post.id %}" class="link-underline link-offset-1 link-underline-opacity-0 text-dark">
                     <h5>{{ post.title }}</h5>
                     <p>{{ post.content|truncatewords:20|safe}}</p>
@@ -55,6 +68,7 @@
                     </a>
                 </div>
                 {% endfor %}
+
             </div>
         </div>
     </div>

@@ -1,13 +1,16 @@
+import re
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
-from .models import Post, Comment, Follow, Notification, PrivateMessage, Category, Tag 
-from .forms import  CommentForm, MessageForm, PostForm, EditPostForm
+from .models import Post, Comment, Follow, Notification, PrivateMessage, Category, CustomTag
+from .forms import  CommentForm, MessageForm, PostForm, EditPostForm, CategoryForm
 from django.db.models import Q
 from django.contrib.auth.models import User
 from django.core.paginator import Paginator
 from django.http import HttpResponseForbidden
 from django.contrib import messages
 from django.db.models import Count
+from nltk.corpus import stopwords
+from nltk.tokenize import word_tokenize
 
 def post_detail(request, post_id):
     post = get_object_or_404(Post, id=post_id)
@@ -47,11 +50,18 @@ def home(request):
         .annotate(like_count=Count('likes'))
         .order_by('-like_count')[:4]
     )
+
+    top_categories = (
+        Category.objects.annotate(post_count=Count('posts'))
+        .order_by('-post_count')[:8]
+    )
+
     posts_with_images = Post.objects.filter(image__isnull=False, is_draft=False).exclude(image='').order_by('-created_at')
     posts_without_images = Post.objects.filter(Q(image__isnull=True) | Q(image='')).order_by('-created_at')
     
     context = {
         'top_posts': top_posts,
+        'top_categories': top_categories,
         'posts_with_images': posts_with_images,
         'posts_without_images': posts_without_images,
     }
@@ -66,7 +76,35 @@ def filter_posts_by_category(request, category_id):
         'posts': posts,
         'categories': categories,
     })
-   
+
+def posts_by_category(request):
+    categories = Category.objects.all()
+    selected_category = None
+    posts = Post.objects.all()
+
+    if 'category' in request.GET and request.GET['category']:
+        selected_category = Category.objects.get(id=request.GET['category'])
+        posts = Post.objects.filter(category=selected_category)
+
+    return render(request, 'posts_by_category.html', {
+        'categories': categories,
+        'selected_category': selected_category,
+        'posts': posts,
+    })
+
+def generate_tags(content):
+    words = word_tokenize(content.lower())
+    
+    stop_words = set(stopwords.words('english'))
+    keywords = [word for word in words if word not in stop_words and word.isalnum()]
+ 
+    return ', '.join(set(keywords[:10]))
+
+def posts_by_tag(request, slug):
+    tag = get_object_or_404(CustomTag, slug=slug)
+    posts = Post.objects.filter(tag__slug=slug).distinct()
+    return render(request, 'posts_by_tag.html', {'tag': tag, 'posts': posts})
+
 def create_post(request):
     if request.method == 'POST':
         form = PostForm(request.POST, request.FILES)
@@ -196,4 +234,15 @@ def followers_list(request):
     followers = request.user.followers.all()
     return render(request, 'followers_list.html', {'followers': followers})
 
+def add_category(request):
+    if request.method == 'POST':
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Category added successfully!')
+            return redirect('add_category')  # Redirect to the same page or another as desired
+    else:
+        form = CategoryForm()
+
+    return render(request, 'add_category.html', {'form': form})
 

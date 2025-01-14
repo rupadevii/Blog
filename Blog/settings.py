@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-#p_ftn-6v^f$fw%0ld+ia%fsxa*u3$g^j3*jebjmbsc3mnjq16
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['blog-production-38fc.up.railway.app', 'https://blog-production-38fc.up.railway.app']
+ALLOWED_HOSTS = ['blog-production-38fc.up.railway.app', 'https://blog-production-38fc.up.railway.app', '127.0.0.1']
 CSRF_TRUSTED_ORIGINS = ['https://blog-production-38fc.up.railway.app']
 
 
@@ -42,7 +42,8 @@ INSTALLED_APPS = [
     'main.apps.MainConfig',
     'users.apps.UsersConfig',
     'django_ckeditor_5',
-    'whitenoise.runserver_nostatic'
+    'whitenoise.runserver_nostatic',
+    'taggit',
 ]
 
 MIDDLEWARE = [

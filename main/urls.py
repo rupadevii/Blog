@@ -19,6 +19,8 @@ urlpatterns = [
     path('post/<int:post_id>/delete/', views.delete_post, name='delete_post'),
     path('analytics/', views.post_analytics, name='post_analytics'),
     path('category/<int:category_id>/', views.filter_posts_by_category, name='filter_posts_by_category'),
-
+    path('add-category/', views.add_category, name='add_category'),
+    path('category-dropdown/', views.posts_by_category, name='posts_by_category'),
+    path('tag/<slug:slug>/', views.posts_by_tag, name='posts_by_tag')
 ]
 

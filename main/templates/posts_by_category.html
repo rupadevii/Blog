@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+
+{% block title %} Browse Posts {% endblock %}
+
+{% block content %}
+<div class="wrapper p-5">
+    <div class="container mt-5 content">
+        <div class="container">
+            <h1 class="display-6">Browse Posts by Category</h1>
+            <form method="get" action="{% url 'posts_by_category' %}" class="mt-4 row">
+                <div class="col-10 pe-0">
+                    <select id="category" name="category" class="form-select">
+                        <option value="">-- Select Category --</option>
+                        {% for category in categories %}
+                            <option value="{{ category.id }}" {% if selected_category and selected_category.id == category.id %}selected{% endif %}>
+                                {{ category.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-2 ms-0">
+                    <button type="submit" class="btn btn-primary">Filter</button>
+                </div>
+            </form>
+            <hr>
+
+            <div class="row">
+                {% for post in posts %}
+                    <div class="p-3 rounded shadow">
+                        <ul class="list-group">
+                            {% for post in posts %}
+                            <div class="mb-4 border border-dark shadow rounded p-2">
+                                <a href="{% url 'post_detail' post.id %}" class="link-underline link-offset-1 link-underline-opacity-0 text-dark">
+                                {% if post.image %}
+                                <img src="{{ post.image.url }}" alt="{{ post.title }}" class="mb-2 w-100">
+                                {% endif %}
+                                <div class="p-3">
+                                    <div class="mb-0">
+                                    <h5 style="display:inline-block" class="me-1 mb-0">{{ post.title }}</h5><span class="fw-light">&#x2022  {{post.created_at}}</span></div>
+                                    <p class="mt-0">{{ post.content|truncatechars:250 | safe }}</p>
+                                </div>
+                                </a>
+                            </div>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% empty %}
+                    <p>No posts in this category yet.</p>
+                {% endfor %}
+            </div>
+
+            <div class="ms-2">
+            <a href="{% url 'home' %}" class="btn btn-success mt-4">Back to Home</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,6 +1,26 @@
 from django.db import models
 from django.contrib.auth.models import User
 from django_ckeditor_5.fields import CKEditor5Field
+from taggit.managers import TaggableManager
+from .utils import generate_tags
+from taggit.models import TagBase, GenericTaggedItemBase
+from taggit.managers import TaggableManager
+from django.utils.text import slugify
+
+class CustomTag(TagBase):
+    slug = models.SlugField(unique=True, max_length=100)
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+class CustomTaggedItem(GenericTaggedItemBase):
+    tag = models.ForeignKey(
+        CustomTag,
+        on_delete=models.CASCADE,
+        related_name="tagged_items"
+    )
 
 class Post(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='posts')
@@ -12,14 +32,30 @@ class Post(models.Model):
     likes = models.ManyToManyField(User, related_name='liked_posts', blank=True)
     is_draft = models.BooleanField(default=False)
     views = models.IntegerField(default=0)
-    category = models.ForeignKey('Category', on_delete=models.SET_NULL, null=True, blank=True)
-    tags = models.ManyToManyField('Tag', blank=True)
+    category = models.ForeignKey('Category', on_delete=models.SET_NULL, null=True, blank=True, related_name= 'posts')
+    tag = TaggableManager(through=CustomTaggedItem)
 
     def __str__(self):
         return self.title
 
     def total_likes(self):
         return self.likes.count()
+    
+    # def save(self, *args, **kwargs):
+    #     super().save(*args, **kwargs)
+
+    #     if not self.tag.exists():  
+    #         generated_tags = self.generate_tags(self.content)
+    #         self.tag.set(generated_tags) 
+
+    def save(self, *args, **kwargs):
+        
+        if not self.pk: 
+            generated_tags = generate_tags(self.content)
+            super().save(*args, **kwargs) 
+            self.tag.set(generated_tags)  
+        else:
+            super().save(*args, **kwargs)
 
 class Comment(models.Model):
     post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name='comments')

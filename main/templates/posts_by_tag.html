@@ -1,0 +1,33 @@
+<!-- posts_by_tag.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="p-5 wrapper">
+    <div class="container mt-5 content">
+    <h2 class="display-6 mb-3">{{ tag.name }}</h2>
+
+    {% if posts %}
+        <div class="p-3 mt-4 rounded shadow">
+            <ul class="list-group">
+                {% for post in posts %}
+                <div class="mb-4 border border-dark shadow rounded p-2">
+                    <a href="{% url 'post_detail' post.id %}" class="link-underline link-offset-1 link-underline-opacity-0 text-dark">
+                    {% if post.image %}
+                    <img src="{{ post.image.url }}" alt="{{ post.title }}" class="mb-2 w-100">
+                    {% endif %}
+                    <div class="p-3">
+                        <div class="mb-0">
+                        <h5 style="display:inline-block" class="me-1 mb-0">{{ post.title }}</h5><span class="fw-light">&#x2022  {{post.created_at}}</span></div>
+                        <p class="mt-0">{{ post.content|truncatechars:250 | safe }}</p>
+                    </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </ul>
+        </div>
+    {% else %}
+        <p>No posts found with this tag.</p>
+    {% endif %}
+    </div>
+</div>
+{% endblock %}
