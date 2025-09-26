@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-#p_ftn-6v^f$fw%0ld+ia%fsxa*u3$g^j3*jebjmbsc3mnjq16
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['blog-production-38fc.up.railway.app', 'https://blog-production-38fc.up.railway.app', '127.0.0.1']
+ALLOWED_HOSTS = ["*"]
 CSRF_TRUSTED_ORIGINS = ['https://blog-production-38fc.up.railway.app']
 
 
@@ -226,7 +226,7 @@ STATICFILES_DIRS = [
 ]
 
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
-STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 MEDIA_ROOT = BASE_DIR / 'media'
